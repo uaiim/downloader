@@ -1,0 +1,84 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.google.devtools.ksp'
+apply plugin: 'maven-publish'
+
+buildscript {
+    apply from: '../versions.gradle'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$gradle_tools_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+android {
+    compileSdk library_compile_version
+
+    defaultConfig {
+        minSdk library_min_version
+        targetSdk library_target_version
+
+        buildToolsVersion = library_build_tools_version
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+    namespace 'id.andtree.req'
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    ksp "androidx.room:room-compiler:$room_version"
+    api "androidx.room:room-runtime:$room_version"
+    api "androidx.core:core-ktx:$core_version"
+    api project(':reqcore')
+
+    testImplementation "junit:junit:$junit_version"
+    androidTestImplementation "androidx.test:runner:$test_runner_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+}
+
+ext {
+    releaseName = 'uaiim-fetch'
+    releaseDescription = 'Fetch is a simple, powerful, customizable file download manager library for Android.'
+    releaseGroupId = 'com.github.uaiim'
+    releaseArtifactId = 'req'
+    releaseVersion = library_version
+}
+
+apply from: '../publish_config.gradle'

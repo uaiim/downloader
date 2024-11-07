@@ -1,0 +1,84 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
+
+buildscript {
+    apply from: '../versions.gradle'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$gradle_tools_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+android {
+    compileSdk library_compile_version
+
+    defaultConfig {
+        minSdkVersion library_min_version
+        targetSdkVersion library_target_version
+
+        buildToolsVersion = library_build_tools_version
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+
+        debug {
+
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+    namespace 'id.andtree.reqhttp'
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    api "com.squareup.okhttp3:okhttp:$okhttp_version"
+    api "com.squareup.okhttp3:okhttp-urlconnection:$okhttp_url_version"
+    api project(':reqcore')
+
+    testImplementation "junit:junit:$junit_version"
+    androidTestImplementation "androidx.test:runner:$test_runner_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+}
+
+ext {
+    releaseName = 'uaiim-fetch'
+    releaseDescription = 'OkHttp Downloader for Fetch2'
+    releaseGroupId = 'com.github.uaiim'
+    releaseArtifactId = 'reqhttp'
+    releaseVersion = library_version
+}
+
+apply from: '../publish_config.gradle'
