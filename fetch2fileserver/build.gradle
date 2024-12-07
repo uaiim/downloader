@@ -1,0 +1,79 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.google.devtools.ksp'
+apply plugin: 'maven-publish'
+
+buildscript {
+    apply from: '../versions.gradle'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$gradle_tools_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+android {
+    compileSdk library_compile_version
+
+    defaultConfig {
+        minSdk library_min_version
+        targetSdk library_target_version
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+    namespace 'com.tonyodev.fetch2fileserver'
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$android_support_version"
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    ksp "androidx.room:room-compiler:$room_version"
+    api "androidx.room:room-runtime:$room_version"
+
+    api project(':fetch2core')
+
+    testImplementation "junit:junit:$junit_version"
+    androidTestImplementation "androidx.test:runner:$test_runner_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+}
+
+ext {
+    releaseName = 'tonyofrancis-fetch'
+    releaseDescription = 'Fetch File Server'
+    releaseGroupId = 'com.github.tonyofrancis'
+    releaseArtifactId = 'fetch2fileserver'
+    releaseVersion = library_version
+}
+
+apply from: '../publish_config.gradle'
